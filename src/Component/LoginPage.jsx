@@ -1,19 +1,33 @@
-import axios from "axios";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { AuthContext } from '../context/AuthContext.js';
+
+
 
 function LoginPage() {
+  const { user, isLogined, setIsLogined, login } =useContext(AuthContext)
+    const navigate=useNavigate()
+  
+    if (isLogined){
+      navigate('/dashboard')
+    }
+  
   const [credential, setCredential] = useState();
-
   function inputHandler(e) {
     setCredential({ ...credential, [e.target.name]: e.target.value });
   }
 
-  const navigate = useNavigate();
+  
+
   function loginHandler(e) {
     e.preventDefault();
-    // console.log(credential)
-    
+    try {
+      login(credential) 
+      navigate('/dashboard')
+    } catch (error) {
+      console.log(error)
+      alert("login failed pls try again")
+    }
   }
 
   // const handleLogout = async () => {

@@ -1,9 +1,20 @@
 import FooterPage from "./FooterPage";
 import '../asset/HomeStyle.css'
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useContext, useEffect } from "react";
+import { AuthContext } from "../context/AuthContext";
 
 
 function HomePage() {
+
+  const { isLogined } =useContext(AuthContext)
+  const navigate=useNavigate()
+
+  if (isLogined){
+    navigate('/dashboard')
+  }
+  
+
   return (
     <>
       {/* Include Header */}

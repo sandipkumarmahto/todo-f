@@ -1,66 +1,28 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import apiClient from "../Service/ApiConfig.js";
+import { AuthContext } from "../context/AuthContext.js";
 
 function HeaderPage() {
-  const [user, setUser] = useState();
-  // Simulate login state
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const navigate = useNavigate();
-  const handleLogout = async () => {
-    // alert("in logout handle")
-    apiClient
-      .post("http://localhost:4000/user/logout")
-      .then((res) => {
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
-        navigate("/login");
-      })
-      .catch((err) => {
-        alert("something problem in logout");
-      });
-  };
+  const { user, isLogined, logout } =useContext(AuthContext)
+  const navigate=useNavigate()
 
-  // Simulate checking token in localStorage (e.g., for JWT-based login)
-  useEffect(() => {
-    console.log("in useeffect function");
-    const token = localStorage.getItem("accessToken"); // Replace with your logic
-    console.log(token);
-    if (token) {
-      setIsLoggedIn(true); // User is logged in
+  if (!isLogined){
+    navigate('/login')
+  }
+
+  const handleLogout=async() =>{
+    try {
+      await logout();
+    } catch (error) {
+      alert("something wrong")
+      console.log(error)
     }
-  }, []);
-
-  const getUserData = async () => {
-    await apiClient
-      .get("user/getUser")
-      .then((res) => {
-        console.log("in getting user data");
-        setUser(res.data);
-        console.log(user);
-      })
-      .catch((err) => {
-        // alert("unable to fetch user")
-        console.log(err);
-      });
-  };
-
-  useEffect(() => {
-    if (isLoggedIn) {
-      getUserData();
-    }
-    console.log("in 2nd useeffect");
-    console.log(user?.fullname);
-    console.log(user?.email);
-    console.log(user?.ps);
-  }, [isLoggedIn]);
-
-  console.log(user);
+  }
 
   return (
     <>
-      <h1> hello {user?.fullname}</h1>
       {/* Navbar */}
       <nav className="navbar navbar-expand-lg nav-custom fixed-top shadow-sm">
         <div className="container">
@@ -114,7 +76,7 @@ function HeaderPage() {
                   className="ms-2"
                   style={{ color: "var(--text-charcoal)" }}
                 >
-                  {user?.email}
+                  {user?.fullname}
                 </span>
               </button>
               <ul className="dropdown-menu dropdown-menu-end">
@@ -135,9 +97,9 @@ function HeaderPage() {
                 </li>
                 <li>
                   <button
-                    onClick={handleLogout}
                     className="dropdown-item"
-                    to="#"
+                    onClick={handleLogout}
+
                   >
                     <i className="fas fa-sign-out-alt me-2" />
                     Logout
